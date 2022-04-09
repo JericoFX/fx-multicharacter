@@ -1,57 +1,175 @@
 local QBCore = exports["qb-core"]:GetCoreObject()
 
 -- Functions
-local Items = {
-	migrant = { item = "sandwich", cash = 300 },
-	expatriate = { item = "passport", cash = 500, bank = 3000 },
-	citizen = { item = {
-		"phone",
-		"gold_ticket_app",
-	}, cash = 650, bank = 5000 },
-}
+if not Config.Original then
+	local Items = {
+		migrant = { item = "sandwich", cash = 300 },
+		expatriate = { item = "passport", cash = 500, bank = 3000 },
+		citizen = { item = {
+			"phone",
+			"gold_ticket_app",
+		}, cash = 650, bank = 5000 },
+	}
 
-local function GiveStarterItems(source, type)
-	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
-	local info = {}
-	if not Items[type] then
-		return
-	end
-	for k, v in ipairs(Items[type].item) do
-		if v == "gold_ticket_app" then
-			info.citizenid = Player.PlayerData.citizenid
-			info.firstname = Player.PlayerData.charinfo.firstname
-			info.lastname = Player.PlayerData.charinfo.lastname
-			info.birthdate = Player.PlayerData.charinfo.birthdate
-			info.gender = Player.PlayerData.charinfo.gender
-			info.nationality = Player.PlayerData.charinfo.nationality
-			info.description = "This ticket can be changed to a basic appartment on the Real state place"
+	local function GiveStarterItems(source, type)
+		local src = source
+		local Player = QBCore.Functions.GetPlayer(src)
+		local info = {}
+		if not Items[type] then
+			return
+		end
+		for k, v in ipairs(Items[type].item) do
+			if v == "gold_ticket_app" then
+				info.citizenid = Player.PlayerData.citizenid
+				info.firstname = Player.PlayerData.charinfo.firstname
+				info.lastname = Player.PlayerData.charinfo.lastname
+				info.birthdate = Player.PlayerData.charinfo.birthdate
+				info.gender = Player.PlayerData.charinfo.gender
+				info.nationality = Player.PlayerData.charinfo.nationality
+			end
+
+			Player.Functions.AddItem(v, 1, false, info)
 		end
 
-		Player.Functions.AddItem(v, 1, false, info)
+		Player.Functions.AddMoney("cash", Items[type].cash, "Started cash")
+		Player.Functions.AddMoney("bank", Items[type].cash, "Started cash")
+	end
+	RegisterNetEvent("qb-multicharacter:server:loadUserData", function(cData)
+		local src = source
+		if QBCore.Player.Login(src, cData.citizenid) then
+			print(
+				"^2[qb-core]^7 "
+					.. GetPlayerName(src)
+					.. " (Citizen ID: "
+					.. cData.citizenid
+					.. ") has succesfully loaded!"
+			)
+			QBCore.Commands.Refresh(src)
+			loadHouseData()
+			TriggerClientEvent("apartments:client:setupSpawnUI", src, cData)
+			TriggerEvent(
+				"qb-log:server:CreateLog",
+				"joinleave",
+				"Loaded",
+				"green",
+				"**"
+					.. GetPlayerName(src)
+					.. "** ("
+					.. (QBCore.Functions.GetIdentifier(src, "discord") or "undefined")
+					.. " |  ||"
+					.. (QBCore.Functions.GetIdentifier(src, "ip") or "undefined")
+					.. "|| | "
+					.. (QBCore.Functions.GetIdentifier(src, "license") or "undefined")
+					.. " | "
+					.. cData.citizenid
+					.. " | "
+					.. src
+					.. ") loaded.."
+			)
+		end
+	end)
+	function sendData(src, newData, type)
+		local randbucket = (GetPlayerPed(src) .. math.random(1, 999))
+		SetPlayerRoutingBucket(src, randbucket)
+		print("^2[qb-core]^7 " .. GetPlayerName(src) .. " has succesfully loaded!")
+		QBCore.Commands.Refresh(src)
+		TriggerClientEvent("qb-multicharacter:client:closeNUI", src)
+		--	TriggerClientEvent("apartments:client:setupSpawnUI", src, newData)
+		TriggerClientEvent("fx-spawn:client:HandleSpawnPlayer", src, newData, type)
+		GiveStarterItems(src, type)
 	end
 
-	Player.Functions.AddMoney("cash", Items[type].cash, "Started cash")
-	Player.Functions.AddMoney("bank", Items[type].cash, "Started cash")
-	-- for k, v in pairs(QBCore.Shared.StarterItems) do
-	-- 	local info = {}
-	-- 	if v.item == "id_card" then
-	-- 		info.citizenid = Player.PlayerData.citizenid
-	-- 		info.firstname = Player.PlayerData.charinfo.firstname
-	-- 		info.lastname = Player.PlayerData.charinfo.lastname
-	-- 		info.birthdate = Player.PlayerData.charinfo.birthdate
-	-- 		info.gender = Player.PlayerData.charinfo.gender
-	-- 		info.nationality = Player.PlayerData.charinfo.nationality
-	-- 	elseif v.item == "driver_license" then
-	-- 		info.firstname = Player.PlayerData.charinfo.firstname
-	-- 		info.lastname = Player.PlayerData.charinfo.lastname
-	-- 		info.birthdate = Player.PlayerData.charinfo.birthdate
-	-- 		info.type = "Class C Driver License"
-	-- 	end
-	-- 	Player.Functions.AddItem(v.item, v.amount, false, info)
-	-- end
-end
+	RegisterNetEvent("qb-multicharacter:server:createCharacter", function(data)
+		local src = source
+		local newData = {}
+		newData.cid = data.cid
+		newData.charinfo = data
+		if QBCore.Player.Login(src, false, newData) then
+			sendData(src, newData, data.type or "citizen")
+		end
+	end)
+else
+	local function GiveStarterItems(source)
+		local src = source
+		local Player = QBCore.Functions.GetPlayer(src)
 
+		for k, v in pairs(QBCore.Shared.StarterItems) do
+			local info = {}
+			if v.item == "id_card" then
+				info.citizenid = Player.PlayerData.citizenid
+				info.firstname = Player.PlayerData.charinfo.firstname
+				info.lastname = Player.PlayerData.charinfo.lastname
+				info.birthdate = Player.PlayerData.charinfo.birthdate
+				info.gender = Player.PlayerData.charinfo.gender
+				info.nationality = Player.PlayerData.charinfo.nationality
+			elseif v.item == "driver_license" then
+				info.firstname = Player.PlayerData.charinfo.firstname
+				info.lastname = Player.PlayerData.charinfo.lastname
+				info.birthdate = Player.PlayerData.charinfo.birthdate
+				info.type = "Class C Driver License"
+			end
+			Player.Functions.AddItem(v.item, v.amount, false, info)
+		end
+	end
+	RegisterNetEvent("qb-multicharacter:server:loadUserData", function(cData)
+		local src = source
+		if QBCore.Player.Login(src, cData.citizenid) then
+			print(
+				"^2[qb-core]^7 "
+					.. GetPlayerName(src)
+					.. " (Citizen ID: "
+					.. cData.citizenid
+					.. ") has succesfully loaded!"
+			)
+			QBCore.Commands.Refresh(src)
+			loadHouseData()
+			TriggerClientEvent("apartments:client:setupSpawnUI", src, cData)
+			TriggerEvent(
+				"qb-log:server:CreateLog",
+				"joinleave",
+				"Loaded",
+				"green",
+				"**"
+					.. GetPlayerName(src)
+					.. "** ("
+					.. (QBCore.Functions.GetIdentifier(src, "discord") or "undefined")
+					.. " |  ||"
+					.. (QBCore.Functions.GetIdentifier(src, "ip") or "undefined")
+					.. "|| | "
+					.. (QBCore.Functions.GetIdentifier(src, "license") or "undefined")
+					.. " | "
+					.. cData.citizenid
+					.. " | "
+					.. src
+					.. ") loaded.."
+			)
+		end
+	end)
+	RegisterNetEvent("qb-multicharacter:server:createCharacter", function(data)
+		local src = source
+		local newData = {}
+		newData.cid = data.cid
+		newData.charinfo = data
+		if QBCore.Player.Login(src, false, newData) then
+			if Config.StartingApartment then
+				local randbucket = (GetPlayerPed(src) .. math.random(1, 999))
+				SetPlayerRoutingBucket(src, randbucket)
+				print("^2[qb-core]^7 " .. GetPlayerName(src) .. " has succesfully loaded!")
+				QBCore.Commands.Refresh(src)
+				loadHouseData()
+				TriggerClientEvent("qb-multicharacter:client:closeNUI", src)
+				TriggerClientEvent("apartments:client:setupSpawnUI", src, newData)
+				GiveStarterItems(src)
+			else
+				print("^2[qb-core]^7 " .. GetPlayerName(src) .. " has succesfully loaded!")
+				QBCore.Commands.Refresh(src)
+				loadHouseData()
+				TriggerClientEvent("qb-multicharacter:client:closeNUIdefault", src)
+				GiveStarterItems(src)
+			end
+		end
+	end)
+end
 local function loadHouseData()
 	local HouseGarages = {}
 	local Houses = {}
@@ -101,58 +219,6 @@ end)
 RegisterNetEvent("qb-multicharacter:server:disconnect", function()
 	local src = source
 	DropPlayer(src, "You have disconnected from QBCore")
-end)
-
-RegisterNetEvent("qb-multicharacter:server:loadUserData", function(cData)
-	local src = source
-	if QBCore.Player.Login(src, cData.citizenid) then
-		print(
-			"^2[qb-core]^7 " .. GetPlayerName(src) .. " (Citizen ID: " .. cData.citizenid .. ") has succesfully loaded!"
-		)
-		QBCore.Commands.Refresh(src)
-		loadHouseData()
-		TriggerClientEvent("apartments:client:setupSpawnUI", src, cData)
-		TriggerEvent(
-			"qb-log:server:CreateLog",
-			"joinleave",
-			"Loaded",
-			"green",
-			"**"
-				.. GetPlayerName(src)
-				.. "** ("
-				.. (QBCore.Functions.GetIdentifier(src, "discord") or "undefined")
-				.. " |  ||"
-				.. (QBCore.Functions.GetIdentifier(src, "ip") or "undefined")
-				.. "|| | "
-				.. (QBCore.Functions.GetIdentifier(src, "license") or "undefined")
-				.. " | "
-				.. cData.citizenid
-				.. " | "
-				.. src
-				.. ") loaded.."
-		)
-	end
-end)
-
-function sendData(src, newData, type)
-	local randbucket = (GetPlayerPed(src) .. math.random(1, 999))
-	SetPlayerRoutingBucket(src, randbucket)
-	print("^2[qb-core]^7 " .. GetPlayerName(src) .. " has succesfully loaded!")
-	QBCore.Commands.Refresh(src)
-	TriggerClientEvent("qb-multicharacter:client:closeNUI", src)
-	--	TriggerClientEvent("apartments:client:setupSpawnUI", src, newData)
-	TriggerClientEvent("fx-spawn:client:HandleSpawnPlayer", src, newData, type)
-	GiveStarterItems(src, type)
-end
-
-RegisterNetEvent("qb-multicharacter:server:createCharacter", function(data)
-	local src = source
-	local newData = {}
-	newData.cid = data.cid
-	newData.charinfo = data
-	if QBCore.Player.Login(src, false, newData) then
-		sendData(src, newData, "citizen")
-	end
 end)
 
 RegisterNetEvent("qb-multicharacter:server:deleteCharacter", function(citizenid)

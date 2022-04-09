@@ -46,18 +46,32 @@ local function skyCam(bool)
 	end
 end
 
-local function openCharMenu(bool)
-	QBCore.Functions.TriggerCallback("qb-multicharacter:server:GetNumberOfCharacters", function(result)
-		SetNuiFocus(bool, bool)
-		SendNUIMessage({
-			action = "ui",
-			data = {
+if not Config.Original then
+	function openCharMenu(bool)
+		QBCore.Functions.TriggerCallback("qb-multicharacter:server:GetNumberOfCharacters", function(result)
+			SetNuiFocus(bool, bool)
+			SendNUIMessage({
+				action = "ui",
 				toggle = bool,
 				nChar = result,
-			},
-		})
-		skyCam(bool)
-	end)
+			})
+			skyCam(bool)
+		end)
+	end
+else
+	function openCharMenu(bool)
+		QBCore.Functions.TriggerCallback("qb-multicharacter:server:GetNumberOfCharacters", function(result)
+			SetNuiFocus(bool, bool)
+			SendNUIMessage({
+				action = "ui",
+				data = {
+					toggle = bool,
+					nChar = result,
+				},
+			})
+			skyCam(bool)
+		end)
+	end
 end
 
 -- Events
