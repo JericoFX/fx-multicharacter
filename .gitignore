@@ -1,2 +1,3 @@
 node_modules/
 html/src/lib/SelectCharacter.svelte
+debug.log

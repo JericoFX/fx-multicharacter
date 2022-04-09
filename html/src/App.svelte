@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {transition_in} from 'svelte/internal';
 	import {slide, fade} from 'svelte/transition';
+	import Delete from './lib/Delete.svelte';
 	import InfoScreen from './lib/InfoScreen.svelte';
 	import RegisterPlayer from './lib/RegisterPlayer.svelte';
 	import SelectCharacter from './lib/SelectCharacter.svelte';
@@ -82,7 +83,6 @@
 			const element = Nchar[index];
 			for (let index = 0; index < Data.length; index++) {
 				const element1 = Data[index];
-
 				if (element.id === element1.cid) {
 					element.taked = true;
 					element.text = `${element1.charinfo.firstname} ${element1.charinfo.lastname}`;
@@ -140,7 +140,7 @@
 				fetchNui('createNewCharacter', {firstname: data.firstname, lastname: data.lastname, nationality: data.nationality, birthdate: data.birthdate, gender: data.gender, cid: data.cid});
 				open1 = false;
 			});
-			open = false;
+
 			return m;
 		}
 	}
@@ -152,6 +152,53 @@
 		if (taked) {
 			fetchNui('cDataPed', {citizenid: citizenid});
 		}
+	}
+	function deleteCharacter(citizenid: string) {
+		let opens = true;
+		let m = new Delete({target: container, props: {open: opens}});
+		m.$on('closeModalDelete', (cb) => {
+			const data = cb.detail;
+			if (data.desicion) {
+				opens = false;
+				open = false;
+				fetchNui('removeCharacter', {citizenid: citizenid});
+				Nchar = Nchar = [
+					{
+						id: 1,
+						text: 'Empty',
+						citizenid: '',
+						taked: false,
+					},
+					{
+						id: 2,
+						text: 'Empty',
+						citizenid: '',
+						taked: false,
+					},
+					{
+						id: 3,
+						text: 'Empty',
+						citizenid: '',
+						taked: false,
+					},
+					{
+						id: 4,
+						text: 'Empty',
+						citizenid: '',
+						taked: false,
+					},
+					{
+						id: 5,
+						text: 'Empty',
+						citizenid: '',
+						taked: false,
+					},
+				];
+				Nchar = Nchar;
+			} else {
+				opens = false;
+			}
+		});
 	}
 </script>
 
@@ -187,7 +234,7 @@
 							{#if ss === char.id ? (active = true) : (active = false)}
 								<span transition:slide={{duration: 300}} class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis" style="left:90%"> <img class="playdelete" on:click={() => (char.taked ? playcreate(char.citizenid, char.taked) : playcreate(char.id, char.taked))} src="https://d29fhpw069ctt2.cloudfront.net/icon/image/38132/preview.svg" alt="name" /> </span>
 								{#if char.citizenid.length > 1}
-									<span transition:slide={{duration: 300}} class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis" style="left:10%"> <img class="but playdelete" src="https://www.seekpng.com/png/full/202-2022743_edit-delete-icon-png-download-delete-icon-png.png" alt="name" /> </span>
+									<span transition:slide={{duration: 300}} on:click|preventDefault={() => (char.taked ? deleteCharacter(char.citizenid) : null)} class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis" style="left:10%"> <img class="but playdelete" src="https://www.seekpng.com/png/full/202-2022743_edit-delete-icon-png-download-delete-icon-png.png" alt="name" /> </span>
 
 									<span transition:slide={{duration: 300}} on:click={() => openInfo(char.citizenid)} class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis"> <img class="but playdelete" src="https://img.icons8.com/ios-glyphs/344/info--v3.png" alt="name" /> </span>
 								{/if}

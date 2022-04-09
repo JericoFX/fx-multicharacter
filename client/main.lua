@@ -246,6 +246,7 @@ end)
 
 RegisterNUICallback("removeCharacter", function(data, cb)
 	TriggerServerEvent("qb-multicharacter:server:deleteCharacter", data.citizenid)
+
 	TriggerEvent("qb-multicharacter:client:chooseChar")
 	cb({})
 end)
