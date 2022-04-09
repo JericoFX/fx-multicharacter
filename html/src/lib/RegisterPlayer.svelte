@@ -8,47 +8,41 @@
 	let container;
 
 	export let open = false;
+	export let ID = null;
 	const dispatch = createEventDispatcher();
 	const regTest = new RegExp(Proflist.join('|'), 'i');
 	$: data = {
-		name: '',
-		lastName: '',
+		cid: ID,
+		firstname: '',
+		lastname: '',
 		nationality: '',
 		date: '',
 		gender: 'Male',
 		reset: () => {
-			this.name = '';
+			this.firstname = '';
 			this.lastName = '';
 			this.nationality = '';
 			this.gender = 'Male';
 		},
 	};
 
-	$: check = data.name.length < 4 || data.lastName.length < 4 || data.nationality.length < 4 || data.date === '';
-	$: ter = data.name.length < 4 ? 'The Name is too short' : data.lastName.length < 4 ? 'The Last name is too short' : data.nationality.length < 4 ? 'the nationality is too short' : data.date === '' ? 'Select a propper Date' : null;
+	$: check = data.firstname.length < 4 || data.lastname.length < 4 || data.nationality.length < 4 || data.date === '';
+	$: ter = data.firstname.length < 4 ? 'The Name is too short' : data.lastname.length < 4 ? 'The Last name is too short' : data.nationality.length < 4 ? 'the nationality is too short' : data.date === '' ? 'Select a propper Date' : null;
 	function sendData() {
-		let open = true;
-		if (check || regTest.test(data.name) || regTest.test(data.lastName)) {
+		let open1 = true;
+		if (check || regTest.test(data.firstname) || regTest.test(data.lastname)) {
 			let m = new Modal({
 				target: container,
 				props: {
-					open: open,
-					message: `${check ? ter : regTest.test(data.name) ? `A bad word is present on the Name, Word "${data.name}"` : regTest.test(data.lastName) ? `A bad word is present on the Name, Word "${data.lastName}"` : ''}`,
+					open: open1,
+					message: `${check ? ter : regTest.test(data.firstname) ? `A bad word is present on the Name, Word "${data.firstname}"` : regTest.test(data.lastname) ? `A bad word is present on the Name, Word "${data.lastname}"` : ''}`,
 				},
 			});
-			m.$on('Close', () => (open = false));
+			m.$on('Close', () => (open1 = false));
 		} else {
-			let m = new SelectCharacter({
-				target: container,
-				props: {
-					open: open,
-				},
-			});
-			return m;
+			dispatch('sendRegisterData', {data});
+			open = false;
 		}
-
-		// open = false;
-		// dispatch('sendRegisterData', {data});
 	}
 	function closeModal() {
 		open = false;
@@ -70,8 +64,8 @@
 						</div>
 
 						<div class="char-register-inputs">
-							<input bind:value={data.name} type="text" name="" id="firstName" class="char-reg-input text-capitalize" />
-							<input bind:value={data.lastName} type="text" name="" id="lastName" class="char-reg-input text-capitalize" />
+							<input bind:value={data.firstname} type="text" name="" id="firstName" class="char-reg-input text-capitalize" />
+							<input bind:value={data.lastname} type="text" name="" id="lastName" class="char-reg-input text-capitalize" />
 							<input bind:value={data.nationality} type="text" name="flag" id="nationality" class="char-reg-input text-capitalize" />
 
 							<select bind:value={data.gender} id="gender" name="gender">

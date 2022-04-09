@@ -9,7 +9,6 @@
 		open = false;
 		dispatch('closeModal', {});
 	}
-	$: console.log(JSON.stringify(data));
 </script>
 
 {#if open}

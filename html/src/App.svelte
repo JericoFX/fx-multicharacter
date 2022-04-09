@@ -118,12 +118,12 @@
 	 * @param {boolean} taked Retun false for a empty space, here we can send the modal to create the player
 	 */
 	function playcreate(citizenid: string | number, taked: boolean) {
-		let open = true;
+		let open1 = true;
 
 		if (taked) {
 			fetchNui('selectCharacter', {citizenid: citizenid}).then((cb) => {
 				if (cb) {
-					open = false;
+					open1 = false;
 				}
 			});
 		} else {
@@ -131,9 +131,16 @@
 			let m = new RegisterPlayer({
 				target: container,
 				props: {
-					open: open,
+					open: open1,
+					ID: citizenid,
 				},
 			});
+			m.$on('sendRegisterData', (cb) => {
+				const data = cb.detail.data;
+				fetchNui('createNewCharacter', {firstname: data.firstname, lastname: data.lastname, nationality: data.nationality, birthdate: data.birthdate, gender: data.gender, cid: data.cid});
+				open1 = false;
+			});
+			open = false;
 			return m;
 		}
 	}

@@ -149,7 +149,7 @@ RegisterNetEvent("qb-multicharacter:server:createCharacter", function(data)
 	newData.cid = data.cid
 	newData.charinfo = data
 	if QBCore.Player.Login(src, false, newData) then
-		sendData(src, newData, data.type)
+		sendData(src, newData, "citizen")
 	end
 end)
 
