@@ -105,8 +105,10 @@ end)
 
 RegisterNetEvent("qb-multicharacter:server:loadUserData", function(cData)
 	local src = source
-	if QBCore.Player.Login(src, cData) then
-		print("^2[qb-core]^7 " .. GetPlayerName(src) .. " (Citizen ID: " .. cData .. ") has succesfully loaded!")
+	if QBCore.Player.Login(src, cData.citizenid) then
+		print(
+			"^2[qb-core]^7 " .. GetPlayerName(src) .. " (Citizen ID: " .. cData.citizenid .. ") has succesfully loaded!"
+		)
 		QBCore.Commands.Refresh(src)
 		loadHouseData()
 		TriggerClientEvent("apartments:client:setupSpawnUI", src, cData)
@@ -124,7 +126,7 @@ RegisterNetEvent("qb-multicharacter:server:loadUserData", function(cData)
 				.. "|| | "
 				.. (QBCore.Functions.GetIdentifier(src, "license") or "undefined")
 				.. " | "
-				.. cData
+				.. cData.citizenid
 				.. " | "
 				.. src
 				.. ") loaded.."

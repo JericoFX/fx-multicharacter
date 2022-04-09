@@ -119,7 +119,7 @@ RegisterNUICallback("disconnectButton", function(data, cb)
 end)
 
 RegisterNUICallback("selectCharacter", function(data, cb)
-	local cData = data.citizenid
+	local cData = data
 	DoScreenFadeOut(10)
 	TriggerServerEvent("qb-multicharacter:server:loadUserData", cData)
 	openCharMenu(false)
