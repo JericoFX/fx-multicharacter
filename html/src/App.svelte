@@ -139,6 +139,7 @@
 				const data = cb.detail.data;
 				fetchNui('createNewCharacter', {firstname: data.firstname, lastname: data.lastname, nationality: data.nationality, birthdate: data.birthdate, gender: data.gender, cid: data.cid});
 				open1 = false;
+				open = false;
 			});
 
 			return m;
@@ -164,43 +165,46 @@
 				opens = false;
 				open = false;
 				fetchNui('removeCharacter', {citizenid: citizenid});
-				Nchar = Nchar = [
-					{
-						id: 1,
-						text: 'Empty',
-						citizenid: '',
-						taked: false,
-					},
-					{
-						id: 2,
-						text: 'Empty',
-						citizenid: '',
-						taked: false,
-					},
-					{
-						id: 3,
-						text: 'Empty',
-						citizenid: '',
-						taked: false,
-					},
-					{
-						id: 4,
-						text: 'Empty',
-						citizenid: '',
-						taked: false,
-					},
-					{
-						id: 5,
-						text: 'Empty',
-						citizenid: '',
-						taked: false,
-					},
-				];
-				Nchar = Nchar;
+				resetTable();
 			} else {
 				opens = false;
 			}
 		});
+	}
+	function resetTable() {
+		Nchar = Nchar = [
+			{
+				id: 1,
+				text: 'Empty',
+				citizenid: '',
+				taked: false,
+			},
+			{
+				id: 2,
+				text: 'Empty',
+				citizenid: '',
+				taked: false,
+			},
+			{
+				id: 3,
+				text: 'Empty',
+				citizenid: '',
+				taked: false,
+			},
+			{
+				id: 4,
+				text: 'Empty',
+				citizenid: '',
+				taked: false,
+			},
+			{
+				id: 5,
+				text: 'Empty',
+				citizenid: '',
+				taked: false,
+			},
+		];
+		Nchar = Nchar;
 	}
 </script>
 
