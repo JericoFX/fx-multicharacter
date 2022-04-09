@@ -12,7 +12,7 @@
 </script>
 
 {#if open}
-	<div>
+	<div in:fade={{duration: 500}} out:fade={{duration: 500}}>
 		<div class="my-back">
 			<div class="modal-overlay ">
 				<div class="character-info absolute-right" in:fly={{y: 200, duration: 2000}} out:fade>

@@ -11,7 +11,7 @@
 </script>
 
 {#if open}
-	<div class="modal-overlay " transition:fade={{duration: 100}}>
+	<div class="modal-overlay " in:fade={{duration: 500}} out:fade={{duration: 500}}>
 		<div class="my-back fit" />
 		<div class="modals absolute-center">
 			<p class="characters-register-block-header absolute-center text-capitalize	">

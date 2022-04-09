@@ -51,7 +51,7 @@
 </script>
 
 {#if open}
-	<div bind:this={container} in:fade={{delay: 600}} out:fade>
+	<div bind:this={container} in:fade={{duration: 500}} out:fade={{duration: 500}}>
 		<div class="container fit non-selectable">
 			<div class="my-back">
 				<div class="modal-overlay ">

@@ -11,21 +11,23 @@
 </script>
 
 {#if open}
-	<div class="modal-overlay" transition:fade={{duration: 100}}>
-		<div class="my-back fit" />
-		<div class="modals absolute-center">
-			<div class="character-delete absolute-center">
-				<div class="characters-delete-block-header">
-					<p>Delete Character</p>
+	<main in:fade={{delay: 600, duration: 500}} out:fade={{duration: 500}}>
+		<div class="modal-overlay">
+			<div class="my-back fit" />
+			<div class="modals absolute-center">
+				<div class="character-delete absolute-center">
+					<div class="characters-delete-block-header">
+						<p>Delete Character</p>
+					</div>
+
+					<p>Are You Sure You Want To Delete This Character?</p>
+
+					<div class="character-acceptdel-btn" id="accept-delete"><p id="accept-text" on:click={() => closeModal(true)}>Confirm</p></div>
+					<div class="character-canceldel-btn" id="cancel-delete"><p id="cancel-text" on:click={() => closeModal(false)}>Return</p></div>
 				</div>
-
-				<p>Are You Sure You Want To Delete This Character?</p>
-
-				<div class="character-acceptdel-btn" id="accept-delete"><p id="accept-text" on:click={() => closeModal(true)}>Confirm</p></div>
-				<div class="character-canceldel-btn" id="cancel-delete"><p id="cancel-text" on:click={() => closeModal(false)}>Return</p></div>
 			</div>
 		</div>
-	</div>
+	</main>
 {/if}
 
 <style>

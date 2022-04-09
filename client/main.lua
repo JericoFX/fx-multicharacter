@@ -52,8 +52,10 @@ if not Config.Original then
 			SetNuiFocus(bool, bool)
 			SendNUIMessage({
 				action = "ui",
-				toggle = bool,
-				nChar = result,
+				data = {
+					toggle = bool,
+					nChar = result,
+				},
 			})
 			skyCam(bool)
 		end)
@@ -64,11 +66,10 @@ else
 			SetNuiFocus(bool, bool)
 			SendNUIMessage({
 				action = "ui",
-				data = {
-					toggle = bool,
-					nChar = result,
-				},
+				toggle = bool,
+				nChar = result,
 			})
+
 			skyCam(bool)
 		end)
 	end

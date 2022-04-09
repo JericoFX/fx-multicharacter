@@ -1,5 +1,4 @@
 <script lang="ts">
-	import {transition_in} from 'svelte/internal';
 	import {slide, fade} from 'svelte/transition';
 	import Delete from './lib/Delete.svelte';
 	import InfoScreen from './lib/InfoScreen.svelte';
@@ -63,7 +62,7 @@
 		phone: '',
 	};
 	useNuiEvent('ui', ({toggle, nChar}) => {
-		open = toggle;
+		open = toggle ?? true;
 		getData();
 	});
 	function getData() {
@@ -73,9 +72,6 @@
 		});
 		fetchNui('removeBlur');
 	}
-	useNuiEvent('setupCharacters', ({characters}) => {
-		Data = characters;
-	});
 
 	$: active = false;
 	function replace() {
@@ -212,7 +208,7 @@
 	<link href="https://cdn.jsdelivr.net/npm/quasar@2.6.5/dist/quasar.prod.css" rel="stylesheet" type="text/css" />
 </svelte:head>
 {#if open}
-	<main bind:this={container}>
+	<main bind:this={container} in:fade={{duration: 2000}} out:fade={{duration: 1000}}>
 		<div class="container absolute-center non-selectable">
 			{#if welcome}
 				<div class="welcomescreen">
