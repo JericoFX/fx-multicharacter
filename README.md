@@ -2,9 +2,7 @@
 
 Do not use yet, this version is re-written with Svelte so no more jquery bloated code this version here is modified to use for a particular server, i will release the "normal" version so everyone can use it
 
-
-
-
+Thanks to project-error and his amazing resource Svelte-fivem-boilerplate
 
 # License
 
