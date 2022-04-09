@@ -2,9 +2,9 @@
 
 Do not use yet, this version is re-written with Svelte so no more jquery bloated code this version here is modified to use for a particular server, i will release the "normal" version so everyone can use it
 
-![Hi]https://img001.prntscr.com/file/img001/euHDZC4dShGmysoyyZ8S4w.png
 
-![Hi]https://img001.prntscr.com/file/img001/6PDQ_mGUTsiq33dSikn4YA.png
+
+
 
 # License
 
@@ -34,7 +34,7 @@ Do not use yet, this version is re-written with Svelte so no more jquery bloated
 
 ## Screenshots
 
-![Character Selection](https://i.imgur.com/EUB5X6Y.png) ![Character Registration](https://i.imgur.com/RKxiyed.png)
+![Character Selection](https://img001.prntscr.com/file/img001/euHDZC4dShGmysoyyZ8S4w.png) ![Character Registration](https://img001.prntscr.com/file/img001/6PDQ_mGUTsiq33dSikn4YA.png)
 
 ## Features
 
