@@ -1,5 +1,34 @@
 local QBCore = exports["qb-core"]:GetCoreObject()
-
+local function loadHouseData()
+	local HouseGarages = {}
+	local Houses = {}
+	local result = MySQL.Sync.fetchAll("SELECT * FROM houselocations", {})
+	if result[1] ~= nil then
+		for k, v in pairs(result) do
+			local owned = false
+			if tonumber(v.owned) == 1 then
+				owned = true
+			end
+			local garage = v.garage ~= nil and json.decode(v.garage) or {}
+			Houses[v.name] = {
+				coords = json.decode(v.coords),
+				owned = v.owned,
+				price = v.price,
+				locked = true,
+				adress = v.label,
+				tier = v.tier,
+				garage = garage,
+				decorations = {},
+			}
+			HouseGarages[v.name] = {
+				label = v.label,
+				takeVehicle = garage,
+			}
+		end
+	end
+	TriggerClientEvent("qb-garages:client:houseGarageConfig", -1, HouseGarages)
+	TriggerClientEvent("qb-houses:client:setHouseConfig", -1, Houses)
+end
 -- Functions
 if not Config.Original then
 	local Items = {
@@ -169,36 +198,6 @@ else
 			end
 		end
 	end)
-end
-local function loadHouseData()
-	local HouseGarages = {}
-	local Houses = {}
-	local result = MySQL.Sync.fetchAll("SELECT * FROM houselocations", {})
-	if result[1] ~= nil then
-		for k, v in pairs(result) do
-			local owned = false
-			if tonumber(v.owned) == 1 then
-				owned = true
-			end
-			local garage = v.garage ~= nil and json.decode(v.garage) or {}
-			Houses[v.name] = {
-				coords = json.decode(v.coords),
-				owned = v.owned,
-				price = v.price,
-				locked = true,
-				adress = v.label,
-				tier = v.tier,
-				garage = garage,
-				decorations = {},
-			}
-			HouseGarages[v.name] = {
-				label = v.label,
-				takeVehicle = garage,
-			}
-		end
-	end
-	TriggerClientEvent("qb-garages:client:houseGarageConfig", -1, HouseGarages)
-	TriggerClientEvent("qb-houses:client:setHouseConfig", -1, Houses)
 end
 
 -- Commands
