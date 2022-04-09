@@ -144,6 +144,7 @@ end)
 
 RegisterNUICallback("cDataPed", function(data, cb)
 	local cData = data.citizenid
+	local Taked = data.taked
 	SetEntityAsMissionEntity(charPed, true, true)
 	DeleteEntity(charPed)
 	if cData ~= nil then

@@ -150,7 +150,9 @@
 	 */
 	function spawnChar(citizenid: string | number, taked: boolean) {
 		if (taked) {
-			fetchNui('cDataPed', {citizenid: citizenid});
+			fetchNui('cDataPed', {citizenid: citizenid, taked: taked});
+		} else {
+			fetchNui('cDataPed', {citizenid: null, taked: taked});
 		}
 	}
 	function deleteCharacter(citizenid: string) {
