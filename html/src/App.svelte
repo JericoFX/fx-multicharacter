@@ -1,47 +1,17 @@
 <script lang="ts">
-	import {slide, fade} from 'svelte/transition';
-	import Delete from './lib/Delete.svelte';
-	import InfoScreen from './lib/InfoScreen.svelte';
-	import RegisterPlayer from './lib/RegisterPlayer.svelte';
-	import SelectCharacter from './lib/SelectCharacter.svelte';
-	import {fetchNui} from './utils/fetchNui';
-	import {isEnvBrowser} from './utils/misc';
-	import {useNuiEvent} from './utils/useNuiEvent';
+	import { slide, fade } from "svelte/transition";
+	import Delete from "./lib/Delete.svelte";
+	import InfoScreen from "./lib/InfoScreen.svelte";
+	import RegisterPlayer from "./lib/RegisterPlayer.svelte";
+	import SelectCharacter from "./lib/SelectCharacter.svelte";
+	import { fetchNui } from "./utils/fetchNui";
+	import { isEnvBrowser } from "./utils/misc";
+	import { useNuiEvent } from "./utils/useNuiEvent";
 	$: selected = 0;
 	let container;
 	$: open = isEnvBrowser() ? true : false;
-	$: Nchar = [
-		{
-			id: 1,
-			text: 'Empty',
-			citizenid: '',
-			taked: false,
-		},
-		{
-			id: 2,
-			text: 'Empty',
-			citizenid: '',
-			taked: false,
-		},
-		{
-			id: 3,
-			text: 'Empty',
-			citizenid: '',
-			taked: false,
-		},
-		{
-			id: 4,
-			text: 'Empty',
-			citizenid: '',
-			taked: false,
-		},
-		{
-			id: 5,
-			text: 'Empty',
-			citizenid: '',
-			taked: false,
-		},
-	];
+	let amount = 0;
+	$: Nchar = [];
 	$: Data = [];
 	let contact = false;
 	let welcome = false;
@@ -55,22 +25,32 @@
 		replace();
 	}, 2000);
 	$: Repl = {
-		name: '',
-		citizenid: '',
-		job: '',
-		money: '',
-		phone: '',
+		name: "",
+		citizenid: "",
+		job: "",
+		money: "",
+		phone: "",
 	};
-	useNuiEvent('ui', ({toggle, nChar}) => {
+	useNuiEvent("ui", ({ toggle, nChar }) => {
 		open = toggle ?? true;
+		amount = nChar;
+		Nchar.length = 0;
+		for (let index = 0; index < amount; index++) {
+			Nchar.push({
+				id: index + 1,
+				text: "Empty",
+				citizenid: "",
+				taked: false,
+			});
+		}
 		getData();
 	});
 	function getData() {
-		fetchNui('setupCharacters').then((cb) => {
+		fetchNui("setupCharacters").then((cb) => {
 			Data = cb;
 			replace();
 		});
-		fetchNui('removeBlur');
+		fetchNui("removeBlur");
 	}
 
 	$: active = false;
@@ -117,7 +97,7 @@
 		let open1 = true;
 
 		if (taked) {
-			fetchNui('selectCharacter', {citizenid: citizenid}).then((cb) => {
+			fetchNui("selectCharacter", { citizenid: citizenid }).then((cb) => {
 				if (cb) {
 					open1 = false;
 				}
@@ -131,9 +111,16 @@
 					ID: citizenid,
 				},
 			});
-			m.$on('sendRegisterData', (cb) => {
+			m.$on("sendRegisterData", (cb) => {
 				const data = cb.detail.data;
-				fetchNui('createNewCharacter', {firstname: data.firstname, lastname: data.lastname, nationality: data.nationality, birthdate: data.birthdate, gender: data.gender, cid: data.cid});
+				fetchNui("createNewCharacter", {
+					firstname: data.firstname,
+					lastname: data.lastname,
+					nationality: data.nationality,
+					birthdate: data.birthdate,
+					gender: data.gender,
+					cid: data.cid,
+				});
 				open1 = false;
 				open = false;
 			});
@@ -147,20 +134,20 @@
 	 */
 	function spawnChar(citizenid: string | number, taked: boolean) {
 		if (taked) {
-			fetchNui('cDataPed', {citizenid: citizenid, taked: taked});
+			fetchNui("cDataPed", { citizenid: citizenid, taked: taked });
 		} else {
-			fetchNui('cDataPed', {citizenid: null, taked: taked});
+			fetchNui("cDataPed", { citizenid: null, taked: taked });
 		}
 	}
 	function deleteCharacter(citizenid: string) {
 		let opens = true;
-		let m = new Delete({target: container, props: {open: opens}});
-		m.$on('closeModalDelete', (cb) => {
+		let m = new Delete({ target: container, props: { open: opens } });
+		m.$on("closeModalDelete", (cb) => {
 			const data = cb.detail;
 			if (data.desicion) {
 				opens = false;
 				open = false;
-				fetchNui('removeCharacter', {citizenid: citizenid});
+				fetchNui("removeCharacter", { citizenid: citizenid });
 				resetTable();
 			} else {
 				opens = false;
@@ -171,32 +158,32 @@
 		Nchar = Nchar = [
 			{
 				id: 1,
-				text: 'Empty',
-				citizenid: '',
+				text: "Empty",
+				citizenid: "",
 				taked: false,
 			},
 			{
 				id: 2,
-				text: 'Empty',
-				citizenid: '',
+				text: "Empty",
+				citizenid: "",
 				taked: false,
 			},
 			{
 				id: 3,
-				text: 'Empty',
-				citizenid: '',
+				text: "Empty",
+				citizenid: "",
 				taked: false,
 			},
 			{
 				id: 4,
-				text: 'Empty',
-				citizenid: '',
+				text: "Empty",
+				citizenid: "",
 				taked: false,
 			},
 			{
 				id: 5,
-				text: 'Empty',
-				citizenid: '',
+				text: "Empty",
+				citizenid: "",
 				taked: false,
 			},
 		];
@@ -205,10 +192,18 @@
 </script>
 
 <svelte:head>
-	<link href="https://cdn.jsdelivr.net/npm/quasar@2.6.5/dist/quasar.prod.css" rel="stylesheet" type="text/css" />
+	<link
+		href="https://cdn.jsdelivr.net/npm/quasar@2.6.5/dist/quasar.prod.css"
+		rel="stylesheet"
+		type="text/css"
+	/>
 </svelte:head>
 {#if open}
-	<main bind:this={container} in:fade={{duration: 2000}} out:fade={{duration: 1000}}>
+	<main
+		bind:this={container}
+		in:fade={{ duration: 2000 }}
+		out:fade={{ duration: 1000 }}
+	>
 		<div class="container absolute-center non-selectable">
 			{#if welcome}
 				<div class="welcomescreen">
@@ -224,21 +219,82 @@
 				</div>
 			{/if}
 			{#if contact}
-				<div class="content" transition:fade style="display:flex;justify-content:space-between;">
+				<div
+					class="content"
+					transition:fade
+					style="display:flex;justify-content:space-between;"
+				>
 					{#each Nchar as char}
-						<div class:moveup={ss === char.id ? true : false} on:click|preventDefault={() => (char.taked ? spawnChar(char.citizenid, char.taked) : spawnChar(char.id, char.taked))} class="character-list  flex relative-position q-px-sm q-mx-sm " on:click={() => (ss = char.id)}>
+						<div
+							class:moveup={ss === char.id ? true : false}
+							on:click|preventDefault={() =>
+								char.taked
+									? spawnChar(char.citizenid, char.taked)
+									: spawnChar(char.id, char.taked)}
+							class="character-list  flex relative-position q-px-sm q-mx-sm "
+							on:click={() => (ss = char.id)}
+						>
 							<span class="absolute-top text-center text-h4">
 								{char.text}
 							</span>
-							<span class="absolute-top text-center text-h6 q-mt-lg q-pt-md">
+							<span
+								class="absolute-top text-center text-h6 q-mt-lg q-pt-md"
+							>
 								{char.citizenid}
 							</span>
 							{#if ss === char.id ? (active = true) : (active = false)}
-								<span transition:slide={{duration: 300}} class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis" style="left:90%"> <img class="playdelete" on:click={() => (char.taked ? playcreate(char.citizenid, char.taked) : playcreate(char.id, char.taked))} src="https://d29fhpw069ctt2.cloudfront.net/icon/image/38132/preview.svg" alt="name" /> </span>
+								<span
+									transition:slide={{ duration: 300 }}
+									class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis"
+									style="left:90%"
+								>
+									<img
+										class="playdelete"
+										on:click={() =>
+											char.taked
+												? playcreate(
+														char.citizenid,
+														char.taked
+												  )
+												: playcreate(
+														char.id,
+														char.taked
+												  )}
+										src="https://d29fhpw069ctt2.cloudfront.net/icon/image/38132/preview.svg"
+										alt="name"
+									/>
+								</span>
 								{#if char.citizenid.length > 1}
-									<span transition:slide={{duration: 300}} on:click|preventDefault={() => (char.taked ? deleteCharacter(char.citizenid) : null)} class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis" style="left:10%"> <img class="but playdelete" src="https://www.seekpng.com/png/full/202-2022743_edit-delete-icon-png-download-delete-icon-png.png" alt="name" /> </span>
+									<span
+										transition:slide={{ duration: 300 }}
+										on:click|preventDefault={() =>
+											char.taked
+												? deleteCharacter(
+														char.citizenid
+												  )
+												: null}
+										class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis"
+										style="left:10%"
+									>
+										<img
+											class="but playdelete"
+											src="https://www.seekpng.com/png/full/202-2022743_edit-delete-icon-png-download-delete-icon-png.png"
+											alt="name"
+										/>
+									</span>
 
-									<span transition:slide={{duration: 300}} on:click={() => openInfo(char.citizenid)} class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis"> <img class="but playdelete" src="https://img.icons8.com/ios-glyphs/344/info--v3.png" alt="name" /> </span>
+									<span
+										transition:slide={{ duration: 300 }}
+										on:click={() =>
+											openInfo(char.citizenid)}
+										class="but absolute-center text-center text-h6 q-mt-lg q-pt-md ellipsis"
+									>
+										<img
+											class="but playdelete"
+											src="https://img.icons8.com/ios-glyphs/344/info--v3.png"
+											alt="name"
+										/>
+									</span>
 								{/if}
 							{/if}
 						</div>
@@ -251,7 +307,7 @@
 {/if}
 
 <style>
-	@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap');
+	@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap");
 	.container {
 		width: 100vw;
 		height: 100vh;
@@ -281,7 +337,7 @@
 		font-weight: 900;
 		text-transform: uppercase;
 		letter-spacing: 0.1vh;
-		font-family: 'Poppins', sans-serif;
+		font-family: "Poppins", sans-serif;
 	}
 	.but {
 		width: 32px;
@@ -303,7 +359,7 @@
 	.loading-rondje > p {
 		color: white;
 		margin-top: 1vh;
-		font-family: 'Poppins', sans-serif;
+		font-family: "Poppins", sans-serif;
 		text-shadow: 1px 1px 0px #00000085;
 	}
 
