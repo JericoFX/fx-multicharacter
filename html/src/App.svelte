@@ -6,6 +6,7 @@
 	import SelectCharacter from "./lib/SelectCharacter.svelte";
 	import { fetchNui } from "./utils/fetchNui";
 	import { isEnvBrowser } from "./utils/misc";
+import { position } from "./utils/store";
 	import { useNuiEvent } from "./utils/useNuiEvent";
 	$: selected = 0;
 	let container;
@@ -31,9 +32,14 @@
 		money: "",
 		phone: "",
 	};
-	useNuiEvent("ui", ({ toggle, nChar }) => {
+	useNuiEvent("ui", ({ toggle, nChar, align }) => {
 		open = toggle ?? true;
 		amount = nChar;
+		$position = align;
+		FormatNchar();
+		getData();
+	});
+	function FormatNchar() {
 		Nchar.length = 0;
 		for (let index = 0; index < amount; index++) {
 			Nchar.push({
@@ -43,8 +49,8 @@
 				taked: false,
 			});
 		}
-		getData();
-	});
+	}
+
 	function getData() {
 		fetchNui("setupCharacters").then((cb) => {
 			Data = cb;
@@ -148,47 +154,13 @@
 				opens = false;
 				open = false;
 				fetchNui("removeCharacter", { citizenid: citizenid });
-				resetTable();
+				FormatNchar()
 			} else {
 				opens = false;
 			}
 		});
 	}
-	function resetTable() {
-		Nchar = Nchar = [
-			{
-				id: 1,
-				text: "Empty",
-				citizenid: "",
-				taked: false,
-			},
-			{
-				id: 2,
-				text: "Empty",
-				citizenid: "",
-				taked: false,
-			},
-			{
-				id: 3,
-				text: "Empty",
-				citizenid: "",
-				taked: false,
-			},
-			{
-				id: 4,
-				text: "Empty",
-				citizenid: "",
-				taked: false,
-			},
-			{
-				id: 5,
-				text: "Empty",
-				citizenid: "",
-				taked: false,
-			},
-		];
-		Nchar = Nchar;
-	}
+
 </script>
 
 <svelte:head>

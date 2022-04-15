@@ -68,6 +68,7 @@ else
                 action = "ui",
                 toggle = bool,
                 nChar = result,
+                align = Config.InfoAlign
             })
 
             skyCam(bool)

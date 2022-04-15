@@ -1,4 +1,6 @@
 <script lang="ts">
+import { position } from '../utils/store';
+
 	import {createEventDispatcher} from 'svelte';
 	import {fade, fly} from 'svelte/transition';
 	export let open = false;
@@ -15,7 +17,7 @@
 	<div in:fade={{duration: 500}} out:fade={{duration: 500}}>
 		<div class="my-back">
 			<div class="modal-overlay ">
-				<div class="character-info absolute-right" in:fly={{y: 200, duration: 2000}} out:fade>
+				<div class="character-info absolute-left " in:fly={{y: 200, duration: 2000}} out:fade>
 					<div id="char-info-titel" class="absolute-center full-width" style="top:10%;left:53%">
 						<span>Character Information</span>
 					</div>
