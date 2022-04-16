@@ -46,225 +46,213 @@ local function skyCam(bool)
     end
 end
 
-if not Config.Original then
-    function openCharMenu(bool)
-        QBCore.Functions.TriggerCallback("qb-multicharacter:server:GetNumberOfCharacters", function(result)
-            SetNuiFocus(bool, bool)
-            SendNUIMessage({
-                action = "ui",
-                data = {
-                    toggle = bool,
-                    nChar = result,
-                },
-            })
-            skyCam(bool)
-        end)
-    end
-else
-    function openCharMenu(bool)
-        QBCore.Functions.TriggerCallback("qb-multicharacter:server:GetNumberOfCharacters", function(result)
-            SetNuiFocus(bool, bool)
-            SendNUIMessage({
-                action = "ui",
+function openCharMenu(bool)
+    QBCore.Functions.TriggerCallback("qb-multicharacter:server:GetNumberOfCharacters", function(result)
+        SetNuiFocus(bool, bool)
+        SendNUIMessage({
+            action = "ui",
+            data = {
                 toggle = bool,
                 nChar = result,
                 align = Config.InfoAlign
-            })
+
+            }})
 
             skyCam(bool)
         end)
     end
-end
 
--- Events
+    -- Events
 
-RegisterNetEvent("qb-multicharacter:client:closeNUIdefault", function() -- This event is only for no starting apartments
-    DeleteEntity(charPed)
-    SetNuiFocus(false, false)
-    DoScreenFadeOut(500)
-    Wait(2000)
-    SetEntityCoords(PlayerPedId(), Config.DefaultSpawn.x, Config.DefaultSpawn.y, Config.DefaultSpawn.z)
-    TriggerServerEvent("QBCore:Server:OnPlayerLoaded")
-    TriggerEvent("QBCore:Client:OnPlayerLoaded")
-    TriggerServerEvent("qb-houses:server:SetInsideMeta", 0, false)
-    TriggerServerEvent("qb-apartments:server:SetInsideMeta", 0, 0, false)
-    Wait(500)
-    openCharMenu()
-    SetEntityVisible(PlayerPedId(), true)
-    Wait(500)
-    DoScreenFadeIn(250)
-    TriggerEvent("qb-weathersync:client:EnableSync")
-    TriggerEvent("qb-clothes:client:CreateFirstCharacter")
-end)
-
-RegisterNetEvent("qb-multicharacter:client:closeNUI", function()
-    DeleteEntity(charPed)
-    SetNuiFocus(false, false)
-end)
-
-RegisterNetEvent("qb-multicharacter:client:chooseChar", function()
-    SetNuiFocus(false, false)
-    DoScreenFadeOut(10)
-    Wait(1000)
-    local interior = GetInteriorAtCoords(Config.Interior.x, Config.Interior.y, Config.Interior.z - 18.9)
-    LoadInterior(interior)
-    while not IsInteriorReady(interior) do
-        Wait(1000)
-    end
-    FreezeEntityPosition(PlayerPedId(), true)
-    SetEntityCoords(PlayerPedId(), Config.HiddenCoords.x, Config.HiddenCoords.y, Config.HiddenCoords.z)
-    Wait(1500)
-    ShutdownLoadingScreen()
-    ShutdownLoadingScreenNui()
-    Wait(1000)
-    openCharMenu(true)
-end)
-
--- NUI Callbacks
-
-RegisterNUICallback("closeUI", function(data, cb)
-    openCharMenu(false)
-    cb({})
-end)
-
-RegisterNUICallback("disconnectButton", function(data, cb)
-    SetEntityAsMissionEntity(charPed, true, true)
-    DeleteEntity(charPed)
-    TriggerServerEvent("qb-multicharacter:server:disconnect")
-    cb({})
-end)
-
-RegisterNUICallback("selectCharacter", function(data, cb)
-    local cData = data
-    DoScreenFadeOut(10)
-    TriggerServerEvent("qb-multicharacter:server:loadUserData", cData)
-    openCharMenu(false)
-    SetEntityAsMissionEntity(charPed, true, true)
-    DeleteEntity(charPed)
-    cb({})
-end)
-
-RegisterNUICallback("cDataPed", function(data, cb)
-    local cData = data.citizenid
-    local Taked = data.taked
-    SetEntityAsMissionEntity(charPed, true, true)
-    DeleteEntity(charPed)
-    if cData ~= nil then
-        QBCore.Functions.TriggerCallback("qb-multicharacter:server:getSkin", function(model, data)
-            model = model ~= nil and tonumber(model) or false
-            if model ~= nil then
-                CreateThread(function()
-                    RequestModel(model)
-                    while not HasModelLoaded(model) do
-                        Wait(0)
-                    end
-                    charPed = CreatePed(
-                        2,
-                        model,
-                        Config.PedCoords.x,
-                        Config.PedCoords.y,
-                        Config.PedCoords.z - 0.98,
-                        Config.PedCoords.w,
-                        false,
-                        true
-                    )
-                    SetPedComponentVariation(charPed, 0, 0, 0, 2)
-                    FreezeEntityPosition(charPed, false)
-                    SetEntityInvincible(charPed, true)
-                    PlaceObjectOnGroundProperly(charPed)
-                    SetBlockingOfNonTemporaryEvents(charPed, true)
-                    data = json.decode(data)
-
-                    TriggerEvent("qb-clothing:client:loadPlayerClothing", data, charPed)
-                end)
-            else
-                CreateThread(function()
-                    local randommodels = {
-                        "mp_m_freemode_01",
-                        "mp_f_freemode_01",
-                    }
-                    local model = GetHashKey(randommodels[math.random(1, #randommodels)])
-                    RequestModel(model)
-                    while not HasModelLoaded(model) do
-                        Wait(0)
-                    end
-                    charPed = CreatePed(
-                        2,
-                        model,
-                        Config.PedCoords.x,
-                        Config.PedCoords.y,
-                        Config.PedCoords.z - 0.98,
-                        Config.PedCoords.w,
-                        false,
-                        true
-                    )
-                    SetPedComponentVariation(charPed, 0, 0, 0, 2)
-                    FreezeEntityPosition(charPed, false)
-                    SetEntityInvincible(charPed, true)
-                    PlaceObjectOnGroundProperly(charPed)
-                    SetBlockingOfNonTemporaryEvents(charPed, true)
-                end)
-            end
-        end, cData)
-    else
-        CreateThread(function()
-            local randommodels = {
-                "mp_m_freemode_01",
-                "mp_f_freemode_01",
-            }
-            local model = GetHashKey(randommodels[math.random(1, #randommodels)])
-            RequestModel(model)
-            while not HasModelLoaded(model) do
-                Wait(0)
-            end
-            charPed = CreatePed(
-                2,
-                model,
-                Config.PedCoords.x,
-                Config.PedCoords.y,
-                Config.PedCoords.z - 0.98,
-                Config.PedCoords.w,
-                false,
-                true
-            )
-            SetPedComponentVariation(charPed, 0, 0, 0, 2)
-            FreezeEntityPosition(charPed, false)
-            SetEntityInvincible(charPed, true)
-            PlaceObjectOnGroundProperly(charPed)
-            SetBlockingOfNonTemporaryEvents(charPed, true)
-        end)
-    end
-    cb({})
-end)
-
-RegisterNUICallback("setupCharacters", function(data, cb)
-    QBCore.Functions.TriggerCallback("qb-multicharacter:server:setupCharacters", function(result)
-        cb(result)
+    RegisterNetEvent("qb-multicharacter:client:closeNUIdefault", function() -- This event is only for no starting apartments
+        DeleteEntity(charPed)
+        SetNuiFocus(false, false)
+        DoScreenFadeOut(500)
+        Wait(2000)
+        SetEntityCoords(PlayerPedId(), Config.DefaultSpawn.x, Config.DefaultSpawn.y, Config.DefaultSpawn.z)
+        TriggerServerEvent("QBCore:Server:OnPlayerLoaded")
+        TriggerEvent("QBCore:Client:OnPlayerLoaded")
+        TriggerServerEvent("qb-houses:server:SetInsideMeta", 0, false)
+        TriggerServerEvent("qb-apartments:server:SetInsideMeta", 0, 0, false)
+        Wait(500)
+        openCharMenu()
+        SetEntityVisible(PlayerPedId(), true)
+        Wait(500)
+        DoScreenFadeIn(250)
+        TriggerEvent("qb-weathersync:client:EnableSync")
+        TriggerEvent("qb-clothes:client:CreateFirstCharacter")
     end)
-end)
 
-RegisterNUICallback("removeBlur", function(data, cb)
-    SetTimecycleModifier("default")
-    cb({})
-end)
+    RegisterNetEvent("qb-multicharacter:client:closeNUI", function()
+        DeleteEntity(charPed)
+        SetNuiFocus(false, false)
+    end)
 
-RegisterNUICallback("createNewCharacter", function(data, cb)
-    local cData = data
-    DoScreenFadeOut(150)
-    if cData.gender == "Male" then
-        cData.gender = 0
-    elseif cData.gender == "Female" then
-        cData.gender = 1
-    end
-    TriggerServerEvent("qb-multicharacter:server:createCharacter", cData)
-    cb({})
-    Wait(500)
-end)
+    RegisterNetEvent("qb-multicharacter:client:chooseChar", function()
+        SetNuiFocus(false, false)
+        DoScreenFadeOut(10)
+        Wait(1000)
+        local interior = GetInteriorAtCoords(Config.Interior.x, Config.Interior.y, Config.Interior.z - 18.9)
+        LoadInterior(interior)
+        while not IsInteriorReady(interior) do
+            Wait(1000)
+        end
+        FreezeEntityPosition(PlayerPedId(), true)
+        SetEntityCoords(PlayerPedId(), Config.HiddenCoords.x, Config.HiddenCoords.y, Config.HiddenCoords.z)
+        Wait(1500)
+        ShutdownLoadingScreen()
+        ShutdownLoadingScreenNui()
+        Wait(1000)
+        openCharMenu(true)
+    end)
 
-RegisterNUICallback("removeCharacter", function(data, cb)
+    -- NUI Callbacks
 
-    TriggerServerEvent("qb-multicharacter:server:deleteCharacter", data.citizenid)
+    RegisterNUICallback("closeUI", function(data, cb)
+        openCharMenu(false)
+        cb({})
+    end)
 
-    TriggerEvent("qb-multicharacter:client:chooseChar")
-    cb({})
-end)
+    RegisterNUICallback("disconnectButton", function(data, cb)
+        SetEntityAsMissionEntity(charPed, true, true)
+        DeleteEntity(charPed)
+        TriggerServerEvent("qb-multicharacter:server:disconnect")
+        cb({})
+    end)
+
+    RegisterNUICallback("selectCharacter", function(data, cb)
+        local cData = data
+        DoScreenFadeOut(10)
+        TriggerServerEvent("qb-multicharacter:server:loadUserData", cData)
+        openCharMenu(false)
+        SetEntityAsMissionEntity(charPed, true, true)
+        DeleteEntity(charPed)
+        cb({})
+    end)
+
+    RegisterNUICallback("cDataPed", function(data, cb)
+        local cData = data.citizenid
+        local Taked = data.taked
+        SetEntityAsMissionEntity(charPed, true, true)
+        DeleteEntity(charPed)
+        if cData ~= nil then
+            QBCore.Functions.TriggerCallback("qb-multicharacter:server:getSkin", function(model, data)
+                model = model ~= nil and tonumber(model) or false
+                if model ~= nil then
+                    CreateThread(function()
+                        RequestModel(model)
+                        while not HasModelLoaded(model) do
+                            Wait(0)
+                        end
+                        charPed = CreatePed(
+                            2,
+                            model,
+                            Config.PedCoords.x,
+                            Config.PedCoords.y,
+                            Config.PedCoords.z - 0.98,
+                            Config.PedCoords.w,
+                            false,
+                            true
+                        )
+                        SetPedComponentVariation(charPed, 0, 0, 0, 2)
+                        FreezeEntityPosition(charPed, false)
+                        SetEntityInvincible(charPed, true)
+                        PlaceObjectOnGroundProperly(charPed)
+                        SetBlockingOfNonTemporaryEvents(charPed, true)
+                        data = json.decode(data)
+
+                        TriggerEvent("qb-clothing:client:loadPlayerClothing", data, charPed)
+                    end)
+                else
+                    CreateThread(function()
+                        local randommodels = {
+                            "mp_m_freemode_01",
+                            "mp_f_freemode_01",
+                        }
+                        local model = GetHashKey(randommodels[math.random(1, #randommodels)])
+                        RequestModel(model)
+                        while not HasModelLoaded(model) do
+                            Wait(0)
+                        end
+                        charPed = CreatePed(
+                            2,
+                            model,
+                            Config.PedCoords.x,
+                            Config.PedCoords.y,
+                            Config.PedCoords.z - 0.98,
+                            Config.PedCoords.w,
+                            false,
+                            true
+                        )
+                        SetPedComponentVariation(charPed, 0, 0, 0, 2)
+                        FreezeEntityPosition(charPed, false)
+                        SetEntityInvincible(charPed, true)
+                        PlaceObjectOnGroundProperly(charPed)
+                        SetBlockingOfNonTemporaryEvents(charPed, true)
+                    end)
+                end
+            end, cData)
+        else
+            CreateThread(function()
+                local randommodels = {
+                    "mp_m_freemode_01",
+                    "mp_f_freemode_01",
+                }
+                local model = GetHashKey(randommodels[math.random(1, #randommodels)])
+                RequestModel(model)
+                while not HasModelLoaded(model) do
+                    Wait(0)
+                end
+                charPed = CreatePed(
+                    2,
+                    model,
+                    Config.PedCoords.x,
+                    Config.PedCoords.y,
+                    Config.PedCoords.z - 0.98,
+                    Config.PedCoords.w,
+                    false,
+                    true
+                )
+                SetPedComponentVariation(charPed, 0, 0, 0, 2)
+                FreezeEntityPosition(charPed, false)
+                SetEntityInvincible(charPed, true)
+                PlaceObjectOnGroundProperly(charPed)
+                SetBlockingOfNonTemporaryEvents(charPed, true)
+            end)
+        end
+        cb({})
+    end)
+
+    RegisterNUICallback("setupCharacters", function(data, cb)
+        QBCore.Functions.TriggerCallback("qb-multicharacter:server:setupCharacters", function(result)
+            cb(result)
+        end)
+    end)
+
+    RegisterNUICallback("removeBlur", function(data, cb)
+        SetTimecycleModifier("default")
+        cb({})
+    end)
+
+    RegisterNUICallback("createNewCharacter", function(data, cb)
+        local cData = data
+        DoScreenFadeOut(150)
+        if cData.gender == "Male" then
+            cData.gender = 0
+        elseif cData.gender == "Female" then
+            cData.gender = 1
+        end
+        TriggerServerEvent("qb-multicharacter:server:createCharacter", cData)
+        cb({})
+        Wait(500)
+    end)
+
+    RegisterNUICallback("removeCharacter", function(data, cb)
+
+        TriggerServerEvent("qb-multicharacter:server:deleteCharacter", data.citizenid)
+
+        TriggerEvent("qb-multicharacter:client:chooseChar")
+        cb({})
+    end)
+
+   

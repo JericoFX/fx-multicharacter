@@ -109,29 +109,32 @@ import { position } from "./utils/store";
 				}
 			});
 		} else {
+			let open = true
+			let m = new SelectCharacter({target:container,props:{open:open}})
+			m.$on("closeModal",() => open = false)
 			//create new player
-			let m = new RegisterPlayer({
-				target: container,
-				props: {
-					open: open1,
-					ID: citizenid,
-				},
-			});
-			m.$on("sendRegisterData", (cb) => {
-				const data = cb.detail.data;
-				fetchNui("createNewCharacter", {
-					firstname: data.firstname,
-					lastname: data.lastname,
-					nationality: data.nationality,
-					birthdate: data.birthdate,
-					gender: data.gender,
-					cid: data.cid,
-				});
-				open1 = false;
-				open = false;
-			});
+			// let m = new RegisterPlayer({
+			// 	target: container,
+			// 	props: {
+			// 		open: open1,
+			// 		ID: citizenid,
+			// 	},
+			// });
+			// m.$on("sendRegisterData", (cb) => {
+			// 	const data = cb.detail.data;
+			// 	fetchNui("createNewCharacter", {
+			// 		firstname: data.firstname,
+			// 		lastname: data.lastname,
+			// 		nationality: data.nationality,
+			// 		birthdate: data.birthdate,
+			// 		gender: data.gender,
+			// 		cid: data.cid,
+			// 	});
+			// 	open1 = false;
+			// 	open = false;
+			// });
 
-			return m;
+			// return m;
 		}
 	}
 	/**

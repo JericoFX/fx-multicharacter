@@ -1,4 +1,5 @@
 local QBCore = exports["qb-core"]:GetCoreObject()
+
 local function loadHouseData()
     local HouseGarages = {}
     local Houses = {}
@@ -34,10 +35,7 @@ if not Config.Original then
     local Items = {
         migrant = {item = "sandwich", cash = 300},
         expatriate = {item = "passport", cash = 500, bank = 3000},
-        citizen = {item = {
-            "phone",
-            "gold_ticket_app",
-        }, cash = 650, bank = 5000},
+        citizen = {item = {"phone", "gold_ticket_app", }, cash = 650, bank = 5000},
     }
 
     local function GiveStarterItems(source, type)

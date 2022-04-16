@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Proflist from '../assets/proflist';
-	import SelectCharacter from './SelectCharacter.svelte';
 	import {fade, fly} from 'svelte/transition';
 	import {createEventDispatcher} from 'svelte';
 	import Modal from './Modal.svelte';
